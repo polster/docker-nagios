@@ -12,6 +12,7 @@ docker-run-background:
 docker-compose-run:
 	docker-compose up -d
 	docker ps -a
+	docker volume list
 
 docker-destroy-env:
 	docker stop nagios
