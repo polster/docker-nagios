@@ -121,7 +121,10 @@ RUN yum -y remove gcc
 ##################
 
 # Expose required ports
-EXPOSE 25 80
+# web
+EXPOSE 80
+# mail
+EXPOSE 25
 # nrpe
 EXPOSE 5666
 
