@@ -8,6 +8,7 @@ MAINTAINER Simon Dietschi
 
 ARG NAGIOS_VERSION=${nagios_version:-4.2.4}
 ARG NAGIOS_PLUGINS_VERSION=${nagios_version:-2.1.4}
+ARG NAGIOS_NRPE_VERSION=${nagios_nrpe_version:-3.0.1}
 ARG NAGIOS_ADMIN_USER=nagiosadmin
 # Use the following command to generate the password: htpasswd -nb username password
 # Default is nagiosadmin
@@ -32,7 +33,10 @@ RUN yum -y update
 
 # Install required packages
 RUN yum -y install epel-release
-RUN yum -y install gd gd-devel wget httpd php gcc make perl tar unzip sendmail supervisor
+# Permanent packages
+RUN yum -y install wget httpd openssl php perl tar unzip sysstat sendmail supervisor
+# Build/dev dependencies
+RUN yum -y install gd gd-devel openssl-devel gcc glibc libmcrypt-devel make bc
 
 # Create required users and groups
 RUN groupadd $NAGIOS_GROUP && groupadd $NAGIOS_CMDGROUP
@@ -76,6 +80,22 @@ RUN cd /tmp/nagios-plugins-$NAGIOS_PLUGINS_VERSION && ./configure \
   --with-nagios-group=${NAGIOS_GROUP}
 RUN cd /tmp/nagios-plugins-$NAGIOS_PLUGINS_VERSION && make && make install
 
+###########
+# Additions
+###########
+
+# Download additions
+ADD https://github.com/NagiosEnterprises/nrpe/releases/download/$NAGIOS_NRPE_VERSION/nrpe-$NAGIOS_NRPE_VERSION.tar.gz /tmp
+
+# Build and install NRPE (check_nrpe)
+RUN cd /tmp/ && tar xf nrpe-$NAGIOS_NRPE_VERSION.tar.gz
+RUN cd /tmp/nrpe-$NAGIOS_NRPE_VERSION && ./configure \
+  --enable-command-args \
+  --libexecdir=${NAGIOS_HOME}/libexec/ \
+  --with-nagios-user=${NAGIOS_USER} \
+  --with-nagios-group=${NAGIOS_GROUP}
+RUN cd /tmp/nrpe-$NAGIOS_NRPE_VERSION && make check_nrpe && make install-plugin
+
 ###############
 # Nagios Config
 ###############
@@ -100,6 +120,8 @@ RUN yum -y remove gcc
 
 # Expose required ports
 EXPOSE 25 80
+# nrpe
+EXPOSE 5666
 
 # Add the supervisor config
 COPY supervisord.conf /etc/supervisord.conf
