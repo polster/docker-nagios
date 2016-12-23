@@ -6,7 +6,7 @@ MAINTAINER Simon Dietschi
 # Build time arguments
 ######################
 
-ARG NAGIOS_VERSION=${nagios_version:-4.2.3}
+ARG NAGIOS_VERSION=${nagios_version:-4.2.4}
 ARG NAGIOS_PLUGINS_VERSION=${nagios_version:-2.1.4}
 ARG NAGIOS_ADMIN_USER=nagiosadmin
 # Use the following command to generate the password: htpasswd -nb username password
