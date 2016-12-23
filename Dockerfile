@@ -34,7 +34,7 @@ RUN yum -y update
 # Install required packages
 RUN yum -y install epel-release
 # Permanent packages
-RUN yum -y install wget httpd openssl php perl tar unzip sysstat sendmail supervisor
+RUN yum -y install wget httpd openssl php perl tar unzip sysstat supervisor
 # Build/dev dependencies
 RUN yum -y install gd gd-devel openssl-devel gcc glibc libmcrypt-devel make bc
 
@@ -131,5 +131,5 @@ EXPOSE 5666
 # Add the supervisor config
 COPY supervisord.conf /etc/supervisord.conf
 
-# start up nagios, sendmail, apache
+# start up
 CMD ["/usr/bin/supervisord"]
