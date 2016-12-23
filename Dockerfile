@@ -44,13 +44,12 @@ RUN useradd --system -d $NAGIOS_HOME -g $NAGIOS_GROUP $NAGIOS_USER
 RUN usermod -a -G $NAGIOS_CMDGROUP $NAGIOS_USER
 RUN usermod -a -G $NAGIOS_GROUP,$NAGIOS_CMDGROUP apache
 
-# Download Nagios packages
-ADD https://assets.nagios.com/downloads/nagioscore/releases/nagios-$NAGIOS_VERSION.tar.gz /tmp
-ADD https://nagios-plugins.org/download/nagios-plugins-$NAGIOS_PLUGINS_VERSION.tar.gz /tmp
-
 #############
 # Nagios Core
 #############
+
+# Download Nagios core
+ADD https://assets.nagios.com/downloads/nagioscore/releases/nagios-$NAGIOS_VERSION.tar.gz /tmp
 
 # Build and install Nagios
 RUN cd /tmp/ && tar xf nagios-$NAGIOS_VERSION.tar.gz
@@ -71,6 +70,9 @@ RUN chown -R ${NAGIOS_USER}:${NAGIOS_GROUP} ${NAGIOS_HOME}/libexec/eventhandlers
 ################
 # Nagios Plugins
 ################
+
+# Download Nagios plugins
+ADD https://nagios-plugins.org/download/nagios-plugins-$NAGIOS_PLUGINS_VERSION.tar.gz /tmp
 
 # Build and install Nagios plugins
 RUN cd /tmp && tar xf nagios-plugins-$NAGIOS_PLUGINS_VERSION.tar.gz
